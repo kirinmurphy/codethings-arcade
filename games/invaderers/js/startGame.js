@@ -6,6 +6,7 @@ import { checkForDefenderShot } from "./defender/checkForDefenderShot.js";
 import { invaderAttack } from "./invaders/invaderAttack.js";
 import { setupBattleground } from "./setupBattleground.js";
 import { useInvadererHelper } from "./helpers/useInvadererHelper.js";
+import { updateExplosions } from "./explosions/handleExplosion.js";
 
 let animationFrameId = null;
 
@@ -23,20 +24,25 @@ export function startGame() {
   // let shipColor;
 
   const animate = () => {
-    const { invaderVelocityOffset } = get();
+    const { invaderVelocityOffset, gameOutcome } = get();
 
-    increment(BATTLE_PROPS.tick);
-    const tick = get(BATTLE_PROPS.tick);
+    if ( !gameOutcome ) {
+      increment(BATTLE_PROPS.tick);
+      const tick = get(BATTLE_PROPS.tick);
 
-    // shipColor = getNextRGBColor({ shipColor });
-    if (tick % invaderVelocityOffset === 1) { moveFleet(); } 
-    if (tick % 2 == 0) { checkForDefenderShot(); }
-    invaderAttack();
+      // shipColor = getNextRGBColor({ shipColor });
+      if (tick % invaderVelocityOffset === 1) { moveFleet(); } 
+      if (tick % 2 == 0) { checkForDefenderShot(); }
+      invaderAttack();
+    }
+
+    updateExplosions();
 
     updateScreen();
 
-    const gameOutcome = get(BATTLE_PROPS.gameOutcome);
-    if ( !gameOutcome ) {
+    const currentGameOutcome = get(BATTLE_PROPS.gameOutcome);
+    const activeExplosions = get(BATTLE_PROPS.explosions).size > 0;
+    if ( !currentGameOutcome || activeExplosions ) {
       animationFrameId = requestAnimationFrame(animate);
     } else {
       animationFrameId = null;

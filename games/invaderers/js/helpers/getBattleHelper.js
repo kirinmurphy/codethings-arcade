@@ -17,6 +17,7 @@ export const BATTLE_PROPS = {
   deadBois: 'deadBois',
   shooters: 'shooters',
   liveBullets: 'liveBullets',
+  explosions: 'explosions',
   gameOutcome: 'gameOutcome',
 };
 
@@ -109,6 +110,7 @@ function getInitialBattleState({ screenSettings, mapObservers }) {
     [BATTLE_PROPS.deadBois]: new Map(),
     [BATTLE_PROPS.shooters]: new Map(),
     [BATTLE_PROPS.liveBullets]: new Map(),
+    [BATTLE_PROPS.explosions]: new Map(),
     [BATTLE_PROPS.gameOutcome]: null,
   };
 }

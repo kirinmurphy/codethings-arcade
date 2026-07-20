@@ -1,6 +1,7 @@
 import { STATUS } from "../helpers/constants.js";
 import { BATTLE_PROPS } from "../helpers/getBattleHelper.js";
 import { useInvadererHelper } from "../helpers/useInvadererHelper.js";
+import { createBulletExplosion, getDefenderBulletPositions } from "../explosions/handleExplosion.js";
 
 export function checkForDefenderShot () {
   const { mapCoordinates, battleHelper } = useInvadererHelper();
@@ -17,11 +18,21 @@ function moveBullet ({ defenderShotPosition }) {
   const { mapCoordinates, battleHelper, mapObservers, screenSettings } = useInvadererHelper();
   const { getCell } = mapObservers;
   const { defenderBulletLength } = screenSettings;
+  const defenderBulletPositions = getDefenderBulletPositions({ defenderShotPosition });
+  const collisionPosition = getInvaderBulletCollisionPosition({ mapCoordinates, defenderBulletPositions });
 
   buildBullet({ 
     bulletStartPosition: defenderShotPosition, 
     status: STATUS.defenderShot 
   });
+
+  if ( collisionPosition !== null ) {
+    createBulletExplosion({ 
+      collisionPosition, 
+      invaderBulletPosition: collisionPosition 
+    });
+    return;
+  }
     
   const invaderIndex = getInvaderIndex({ mapCoordinates, defenderShotPosition, getCell });
   
@@ -63,4 +74,10 @@ function buildBullet ({ bulletStartPosition, status }) {
     const newPos = getCell.below(bulletStartPosition, { distance: i });
     mapCoordinates.setStatus({ position: newPos, status });
   }
+}
+
+function getInvaderBulletCollisionPosition ({ mapCoordinates, defenderBulletPositions }) {
+  return defenderBulletPositions.find((position) => {
+    return mapCoordinates.getStatus(position) === STATUS.invaderShot;
+  }) || null;
 }

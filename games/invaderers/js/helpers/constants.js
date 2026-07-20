@@ -7,6 +7,9 @@ export const STATUS = {
   defender: 'defender',
   defenderShot: 'defenderShot',
   invaderShot: 'invaderShot',
+  explosion: 'explosion',
+  explosionHot: 'explosionHot',
+  explosionCore: 'explosionCore',
 }
 
 export const DIRECTIONS = {
@@ -21,5 +24,8 @@ export const COLORS = {
   [STATUS.defender]: '#fff',
   [STATUS.defenderShot]: 'orange',
   [STATUS.invaderShot]: 'red',
+  [STATUS.explosion]: '#c92018',
+  [STATUS.explosionHot]: '#ff8a00',
+  [STATUS.explosionCore]: '#fff1a8',
   default: '#000'
 };

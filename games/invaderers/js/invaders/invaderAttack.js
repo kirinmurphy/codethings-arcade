@@ -1,6 +1,7 @@
 import { STATUS } from "../helpers/constants.js";
 import { BATTLE_PROPS } from "../helpers/getBattleHelper.js";
 import { useInvadererHelper } from "../helpers/useInvadererHelper.js";
+import { createBulletExplosion, isExplosionStatus } from "../explosions/handleExplosion.js";
 
 export function invaderAttack() {
   const { battleHelper, mapCoordinates } = useInvadererHelper();
@@ -53,6 +54,19 @@ function moveBullet ({ bulletPos }) {
   // TODO: make different speed for different bullets 
   const newPos = getCell.below(bulletPos, { distance: 1 });
   const newPositionStatus = mapCoordinates.getStatus(newPos);
+
+  if ( newPositionStatus === STATUS.defenderShot ) {
+    createBulletExplosion({ 
+      collisionPosition: newPos, 
+      invaderBulletPosition: newPos
+    });
+    return;
+  }
+
+  if ( isExplosionStatus(newPositionStatus) ) {
+    mapCoordinates.clearPosition(newPos);
+    return;
+  }
 
   if ( newPositionStatus === STATUS.defender ) {
     battleHelper.endGame({ gameOutcome: 'lost' });
