@@ -7,7 +7,14 @@ import { invaderAttack } from "./invaders/invaderAttack.js";
 import { setupBattleground } from "./setupBattleground.js";
 import { useInvadererHelper } from "./helpers/useInvadererHelper.js";
 
+let animationFrameId = null;
+
 export function startGame() {
+  if ( animationFrameId !== null ) {
+    cancelAnimationFrame(animationFrameId);
+    animationFrameId = null;
+  }
+
   const { battleHelper, updateScreen } = useInvadererHelper();
   const { increment, get } = battleHelper;
   
@@ -16,7 +23,7 @@ export function startGame() {
   // let shipColor;
 
   const animate = () => {
-    const { invaderVelocityOffset, gameOutcome } = get();
+    const { invaderVelocityOffset } = get();
 
     increment(BATTLE_PROPS.tick);
     const tick = get(BATTLE_PROPS.tick);
@@ -28,9 +35,14 @@ export function startGame() {
 
     updateScreen();
 
-    if ( !gameOutcome ) { requestAnimationFrame(animate); }
+    const gameOutcome = get(BATTLE_PROPS.gameOutcome);
+    if ( !gameOutcome ) {
+      animationFrameId = requestAnimationFrame(animate);
+    } else {
+      animationFrameId = null;
+    }
   };
-  requestAnimationFrame(animate);
+  animationFrameId = requestAnimationFrame(animate);
 }
 
 function moveFleet () {
